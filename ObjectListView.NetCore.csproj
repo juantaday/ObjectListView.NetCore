@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+	<OutputType>Library</OutputType>
+	<TargetFramework>net8.0-windows</TargetFramework>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<UseWindowsForms>true</UseWindowsForms>
+    <Deterministic>false</Deterministic>
+    <RootNamespace>BrightIdeasSoftware</RootNamespace>
+    <AssemblyName>ObjectListView</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<Version>1.0.1</Version>
+	<!-- Versión principal -->
+	<FileVersion>1.0.0.1</FileVersion>
+	<!-- Versión del archivo -->
+	<InformationalVersion>1.0.0-beta</InformationalVersion>
+	<!-- Versión informativa, puede ser útil para pre-lanzamientos -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\ObjectListView\Resources\clear-filter.png" Link="Resources\clear-filter.png" />
+    <Content Include="..\ObjectListView\Resources\coffee.jpg" Link="Resources\coffee.jpg" />
+    <Content Include="..\ObjectListView\Resources\filter-icons3.png" Link="Resources\filter-icons3.png" />
+    <Content Include="..\ObjectListView\Resources\filter.png" Link="Resources\filter.png" />
+    <Content Include="..\ObjectListView\Resources\sort-ascending.png" Link="Resources\sort-ascending.png" />
+    <Content Include="..\ObjectListView\Resources\sort-descending.png" Link="Resources\sort-descending.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Adapters\" />
+    <Folder Include="Effects\" />
+    <Folder Include="Locators\" />
+    <Folder Include="Sprites\" />
+  </ItemGroup>
+	
+</Project>
