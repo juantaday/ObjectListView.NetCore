@@ -8675,12 +8675,15 @@ namespace BrightIdeasSoftware
         /// </summary>
         /// <param name="index">Index of the item to be returned</param>
         /// <returns>An OLVListItem</returns>
-        public virtual OLVListItem GetItem(int index)
+        public virtual OLVListItem? GetItem(int index)
         {
             if (index < 0 || index >= this.GetItemCount())
                 return null;
 
-            return (OLVListItem)this.Items[index];
+            if (this.Items[index] is OLVListItem model)
+                return model;
+
+            return null;
         }
 
         /// <summary>
