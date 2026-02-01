@@ -3541,6 +3541,7 @@ namespace BrightIdeasSoftware
         }
         private bool showHeaderInAllViews = true;
 
+
         /// <summary>
         /// Override the SmallImageList property so we can correctly shadow its operations.
         /// </summary>
@@ -3550,8 +3551,6 @@ namespace BrightIdeasSoftware
         /// as this will work:
         /// <code>listView1.SmallImageList = listView1.SmallImageList;</code></para>
         /// </remarks>
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         new public ImageList SmallImageList
         {
             get { return this.shadowedImageList; }
