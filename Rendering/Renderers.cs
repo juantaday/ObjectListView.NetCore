@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Renderers - A collection of useful renderers that are used to owner draw a cell in an ObjectListView
  *
  * Author: Phillip Piper
@@ -453,7 +453,7 @@ namespace BrightIdeasSoftware {
         /// </summary>
         [Browsable(false),
          DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Object Aspect {
+        public Object? Aspect {
             get {
                 if (aspect == null)
                     aspect = column.GetValue(this.rowObject);
@@ -462,7 +462,7 @@ namespace BrightIdeasSoftware {
             set { aspect = value; }
         }
 
-        private Object aspect;
+        private Object? aspect;
 
         /// <summary>
         /// What are the bounds of the cell that is being drawn?
@@ -1748,6 +1748,7 @@ namespace BrightIdeasSoftware {
             // any difference -- it is always single line.
             if (!this.CanWrap)
                 flags |= TextFormatFlags.SingleLine;
+
             TextRenderer.DrawText(g, txt, this.Font, r, this.GetForegroundColor(), backColor, flags);
         }
 
@@ -1892,12 +1893,12 @@ namespace BrightIdeasSoftware {
         /// </summary>
         [Browsable(false),
          DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public TextMatchFilter Filter {
+        public TextMatchFilter? Filter {
             get { return filter; }
             set { filter = value; }
         }
 
-        private TextMatchFilter filter;
+        private TextMatchFilter? filter;
 
         /// <summary>
         /// When a filter changes, keep track of the text matching filters
@@ -3518,6 +3519,32 @@ namespace BrightIdeasSoftware {
 
         #region Configuration properties
 
+
+        /// <summary>
+        /// Alineación del texto de la descripción.
+        /// Si es null, hereda la alineación configurada en la columna (TextAlign).
+        /// </summary>
+        [Category("ObjectListView"),
+         Description("Alineación del texto de la descripción. Null = hereda la columna."),
+         DefaultValue(null)]
+        public StringAlignment? DescriptionAlignment
+        {
+            get { return _descriptionAlignment; }
+            set { _descriptionAlignment = value; }
+        }
+        private StringAlignment? _descriptionAlignment;
+
+
+        [Category("ObjectListView"),
+        Description("Alineación del título. Null = hereda la columna."),
+        DefaultValue(null)]
+        public StringAlignment? TitleAlignment
+        {
+            get { return _titleAlignment; }
+            set { _titleAlignment = value; }
+        }
+        private StringAlignment? _titleAlignment ;
+
         /// <summary>
         /// Should text be rendered using GDI routines? This makes the text look more
         /// like a native List view control.
@@ -3737,7 +3764,7 @@ namespace BrightIdeasSoftware {
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public virtual string GetDescription(object model)
+        public virtual string? GetDescription(object model)
         {
             if (String.IsNullOrEmpty(this.DescriptionAspectName))
                 return String.Empty;
@@ -3747,7 +3774,7 @@ namespace BrightIdeasSoftware {
 
             return this.descriptionGetter.GetValue(model) as string;
         }
-        private Munger descriptionGetter;
+        private Munger? descriptionGetter;
 
 
         public object GetGetterDescription(object model)
@@ -3799,8 +3826,6 @@ namespace BrightIdeasSoftware {
         protected virtual void DrawDescribedTask(Graphics g, Rectangle r, string title, string description, object imageSelector)
         {
 
-            //Debug.WriteLine(String.Format("DrawDescribedTask({0}, {1}, {2}, {3})", r, title, description, imageSelector));
-
 
             Rectangle textBounds = r;
             if (imageSelector != null)
@@ -3817,13 +3842,27 @@ namespace BrightIdeasSoftware {
             {
                 using (SolidBrush b = new SolidBrush(this.TitleColorOrDefault))
                 {
-                    this.highlightTextRenderer.CanWrap = false;
-                    this.highlightTextRenderer.Font = this.TitleFontOrDefault;
-                    this.highlightTextRenderer.TextBrush = b;
-                    this.highlightTextRenderer.DrawText(g, textBounds, title);
+                    if (_titleAlignment.HasValue)
+                    {
+                        // Alineación explícita → dibujar directo sin depender de Column.TextAlign
+                        using (StringFormat fmt = new StringFormat(StringFormatFlags.NoWrap))
+                        {
+                            fmt.Trimming = StringTrimming.EllipsisCharacter;
+                            fmt.Alignment = _titleAlignment.Value;
+                            fmt.LineAlignment = StringAlignment.Near;
+                            g.DrawString(title, this.TitleFontOrDefault, b, (RectangleF)textBounds, fmt);
+                        }
+                    }
+                    else
+                    {
+                        // Sin alineación explícita → comportamiento original
+                        this.highlightTextRenderer.CanWrap = false;
+                        this.highlightTextRenderer.Font = this.TitleFontOrDefault;
+                        this.highlightTextRenderer.TextBrush = b;
+                        this.highlightTextRenderer.DrawText(g, textBounds, title);
+                    }
                 }
 
-                // How tall was the title?
                 SizeF size = g.MeasureString(title, this.TitleFontOrDefault, textBounds.Width, this.noWrapStringFormat);
                 int pixelsToDescription = this.TitleDescriptionSpace + (int)size.Height;
                 textBounds.Y += pixelsToDescription;
@@ -3831,18 +3870,48 @@ namespace BrightIdeasSoftware {
             }
 
             // Draw the description
+            //if (!String.IsNullOrEmpty(description))
+            //{
+            //    textBounds.X = 0;
+            //    if (description.Equals("X Tarifa")) {
+            //        description = description;
+            //    }
+            //    using (SolidBrush b = new SolidBrush(this.DescriptionColorOrDefault))
+            //    {
+            //        this.highlightTextRenderer.CanWrap = true;
+            //        this.highlightTextRenderer.Font = this.DescriptionFontOrDefault;
+            //        this.highlightTextRenderer.TextBrush = b;
+            //        this.highlightTextRenderer.DrawText(g, textBounds, description);
+            //    }
+            //}
+
             if (!String.IsNullOrEmpty(description))
             {
                 using (SolidBrush b = new SolidBrush(this.DescriptionColorOrDefault))
                 {
-                    this.highlightTextRenderer.CanWrap = true;
-                    this.highlightTextRenderer.Font = this.DescriptionFontOrDefault;
-                    this.highlightTextRenderer.TextBrush = b;
-                    this.highlightTextRenderer.DrawText(g, textBounds, description);
+                    // Si hay alineación explícita para la descripción → dibujar independiente
+                    if (_descriptionAlignment.HasValue)
+                    {
+                        using (StringFormat fmt = new StringFormat(StringFormatFlags.NoWrap))
+                        {
+                            fmt.Trimming = StringTrimming.EllipsisCharacter;
+                            fmt.Alignment = _descriptionAlignment.Value;
+                            fmt.LineAlignment = StringAlignment.Near;
+                            g.DrawString(description, this.DescriptionFontOrDefault, b, textBounds, fmt);
+                        }
+                    }
+                    else
+                    {
+                        // Sin alineación explícita → hereda Column.TextAlign como siempre
+                        this.highlightTextRenderer.CanWrap = true;
+                        this.highlightTextRenderer.Font = this.DescriptionFontOrDefault;
+                        this.highlightTextRenderer.TextBrush = b;
+                        this.highlightTextRenderer.DrawText(g, textBounds, description);
+                    }
                 }
             }
-
             //g.DrawRectangle(Pens.OrangeRed, r);
+            //g.DrawRectangle(Pens.Blue, textBounds);
         }
 
         #endregion
@@ -3864,6 +3933,8 @@ namespace BrightIdeasSoftware {
 
         #endregion
     }
+
+
 
     /// <summary>
     /// This renderer draws a functioning button in its cell

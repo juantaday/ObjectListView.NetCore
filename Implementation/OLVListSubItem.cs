@@ -103,7 +103,7 @@ namespace BrightIdeasSoftware {
         /// Gets or sets the decoration that will be drawn over this item
         /// </summary>
         /// <remarks>Setting this replaces all other decorations</remarks>
-        public IDecoration Decoration {
+        public IDecoration? Decoration {
             get {
                 return this.HasDecoration ? this.Decorations[0] : null;
             }
