@@ -1305,8 +1305,9 @@ namespace BrightIdeasSoftware
         /// <summary>
         /// Should this list show checkboxes?
         /// </summary>
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [Browsable(true)]
+        [DefaultValue(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public new bool CheckBoxes
         {
             get { return base.CheckBoxes; }
@@ -1706,12 +1707,12 @@ namespace BrightIdeasSoftware
         /// <remarks>If you try to set this to null, it will revert to a HighlightTextRenderer</remarks>
         [Browsable(false),
          DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public IRenderer DefaultRenderer
+        public IRenderer? DefaultRenderer
         {
             get { return this.defaultRenderer; }
             set { this.defaultRenderer = value ?? new HighlightTextRenderer(); }
         }
-        private IRenderer defaultRenderer = new HighlightTextRenderer();
+        private IRenderer? defaultRenderer = new HighlightTextRenderer();
 
         /// <summary>
         /// Get the renderer to be used to draw the given cell.
